@@ -1,0 +1,30 @@
+# ---- Licensed S&P Capital IQ / WRDS data and everything derived from it --------------------
+# (transcript text, QA pairs, passages, embeddings, training checkpoints). Never commit.
+data/
+models/
+_bundle/
+_bundle_sqa/
+_attic/
+others_code/
+partb_outputs/
+tmp/
+results/kaggle/
+results/eval*/
+*.parquet
+*.sqlite
+*.npz
+*.pt
+*.bin
+# full weight files; the released model is committed as model/*/model.safetensors.part-*
+*.safetensors
+
+# ---- credentials, upload state, generated kernels -------------------------------------------------
+*token*.txt
+*api*.txt
+.*.tokens.json
+
+# ---- misc -----------------------------------------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

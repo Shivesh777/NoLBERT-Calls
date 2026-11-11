@@ -1,0 +1,116 @@
+{
+ "calls_root": "set by nolbert_calls/run.py",
+ "pairs_path": "set by nolbert_calls/run.py",
+ "splits_path": "set by nolbert_calls/run.py",
+ "prepared_root": "set by nolbert_calls/run.py",
+ "output_root": "set by nolbert_calls/run.py",
+ "models": {
+  "nolbert_base": {
+   "path": "alikLab/NoLBERT",
+   "revision": "0b0359c62b3f7031c8f0ffa9d323881e829a147b"
+  }
+ },
+ "recipe": {
+  "implementation": "local",
+  "seed": 0,
+  "question_length": 128,
+  "answer_length": 256,
+  "qa_batch_probability": 0.75,
+  "max_exchanges_per_call": 32,
+  "mlm_probability": 0.15,
+  "mlm_weight": 1.0,
+  "batch_size": 32,
+  "min_batch_size": 8,
+  "learning_rate": 2e-05,
+  "weight_decay": 0.01,
+  "betas": [
+   0.9,
+   0.98
+  ],
+  "grad_clip": 1.0,
+  "warmup_fraction": 0.05,
+  "temperature": 0.05,
+  "budget_minutes": 150,
+  "validation_every_minutes": 15,
+  "validation_calls": 300,
+  "validation_min_exchanges": 4,
+  "precision": "auto",
+  "gradient_checkpointing": true,
+  "allow_new_mlm_head": false,
+  "print_every_steps": 50,
+  "smoke_steps": 2,
+  "smoke_batch_size": 2,
+  "implementation_choices": {
+   "call_sampling": "Uniform calls without replacement within a batch; QA exchanges sampled without replacement, up to max_exchanges_per_call (32) per call.",
+   "passages": "Two distinct existing passage rows sampled uniformly without replacement within each sampled call; no adjacency constraint.",
+   "contrastive_inputs": "Clean left and right forwards, separate masked right-side MLM forward.",
+   "scheduler": "Warm-up and cosine decay use elapsed budget time because no fixed step count was supplied.",
+   "validation": "Seed-0 fixed call sample; each question ranks all management answers in its own call; equal-weight mean across calls.",
+   "ties": "Keep earlier best, including step zero. Also score at the end of training.",
+   "budget": "Starts after initial validation/checkpoint; includes subsequent training, periodic validation and saves; final evaluation/export may extend total runtime.",
+   "precision": "Auto requires native BF16 support (emulation excluded); otherwise CUDA fp16+GradScaler, otherwise CPU fp32. Effective mode logged.",
+   "oom": "Retry same batch prefix at half size on CUDA forward/backward or validation OOM, minimum eight for full runs; optimizer-step OOM aborts to avoid partially updated weights."
+  }
+ },
+ "heads": {
+  "protocol_note": "Full-encoder updates with a fresh native sequence-classification head; AdamW lr 2e-5, weight decay 0.01, 10% warm-up, 3 epochs, checkpoint with the lowest validation loss; fp16 autocast on T4. SubjECTive-QA: the authors' three published splits, question + space + answer, 256 tokens (the authors' length), batch 8. GLUE CoLA/SST-2/QNLI: 128 tokens, batch 32, a grouped 10% tuning split of official train with report-overlapping inputs excluded, reported on official dev.",
+  "max_length": 128,
+  "learning_rate": 2e-05,
+  "epochs": 3,
+  "batch_size": 8,
+  "eval_batch_size": 64,
+  "gradient_accumulation_steps": 1,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "freeze_encoder": false,
+  "precision": "fp16",
+  "per_task": {
+   "subjective": {
+    "max_length": 256
+   },
+   "cola": {
+    "batch_size": 32
+   },
+   "sst2": {
+    "batch_size": 32
+   },
+   "qnli": {
+    "batch_size": 32
+   }
+  }
+ },
+ "subjective": {
+  "data_root": "set by nolbert_calls/run.py",
+  "models": [
+   "nolbert_calls_2023"
+  ],
+  "seeds": [
+   5768,
+   78516,
+   944601
+  ],
+  "dataset_id": "gtfintechlab/SubjECTive-QA",
+  "revision": "a63c2a932db83f5869e2f23eaa33f688e756d130",
+  "download_if_missing": true
+ },
+ "glue": {
+  "revision": "bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c",
+  "models": [
+   "nolbert_calls_2023"
+  ],
+  "tasks": [
+   "cola",
+   "sst2",
+   "qnli"
+  ],
+  "seeds": [
+   42
+  ],
+  "tuning_fraction": 0.1,
+  "split_seed": 42,
+  "report_overlap_policy": "exclude_from_training"
+ },
+ "passages_path": "set by nolbert_calls/run.py",
+ "create_date_splits_if_missing": true,
+ "bundle_version": "part-b-audit-v5"
+}

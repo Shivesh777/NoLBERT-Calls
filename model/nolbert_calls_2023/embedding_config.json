@@ -1,0 +1,11 @@
+{
+  "pooling": "mean_last_hidden_nonpadding",
+  "include_special_tokens": true,
+  "normalize": true,
+  "projection": null,
+  "question_length": 128,
+  "answer_length": 256,
+  "truncation_side": "right",
+  "step": 3722,
+  "validation_top1": 0.8068403155604998
+}
